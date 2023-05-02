@@ -1,0 +1,61 @@
+// este ejemplo muestra cuan costoso es la implementacion en prism del modelo establecido de updates.
+
+mdp 
+const int pr = 250;
+ const int lb = 2;
+ const int lhb = 5;
+ const int mb = 50;
+ const int mhb = pr-5;
+ const int hb = 8000;
+
+global be1 : [0..pr] init lb;
+
+label "consensus" = b2-be1< 1 &b3-b2<1;
+
+module n1
+	s1 : [0..1];
+	//b1 : [0..pr] init lhb;	
+	//	comunication 1 to 2
+	//[push1_2] b1>0 -> (b1'= b1+floor((b2-b1)*0.5)); // update 1 when out
+	//[push1_2] b1>0 -> (b1'= b1+ceil((b2-b1)*0.5));
+	[push1_2] be1>0 -> true;
+	// comunication 2 to 1
+	[] s1=1 -> (be1'= be1+floor((b2-be1)*0.5));
+	[push2_1] be1>0 -> (s1'=1);
+
+endmodule
+
+module n2
+//	s2 : [0..1];
+	b2: [0..pr] init mb;	
+// 	comunication 1 to 2
+	[push1_2] b2>0 -> (b2'= b2+floor((be1-b2)*0.5));
+	[push1_2] b2>0 -> (b2'= b2+ceil((be1-b2)*0.5));
+	[push3_2] b2>0 -> (b2'= b2+floor((b3-b2)*0.5));
+	[push3_2] b2>0 -> (b2'= b2+ceil((b3-b2)*0.5));
+	// comunication 2 to 1
+	//[push2_1] b1>0 -> (b2'= b2+floor((b1-b2)*0.5));
+	//[push2_1] b1>0 -> (b2'= b2+ceil((b1-b2)*0.5));
+	[push2_1] b2>0 -> true;
+	[push2_3] b2>0 -> true;
+	
+endmodule
+
+module n3
+//	s3 : [0..1];
+	b3: [0..pr] init mhb;	
+
+//	comunication 3 to 2
+	[push3_2] b3>0 -> true;
+	// comunication 2 to 3
+	[push2_3] b3>0 -> (b3'= b3+floor((b2-b3)*0.5));
+	[push2_3] b3>0 -> (b3'= b3+ceil((b2-b3)*0.5));
+
+
+endmodule
+
+rewards "belief"
+
+		
+
+endrewards 

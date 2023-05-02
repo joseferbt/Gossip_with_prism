@@ -1,0 +1,66 @@
+mdp 
+const int pr = 500;
+ const int lb = 20;
+ const int lhb = 20;
+ const int mb = 250;
+ const int mhb = 480;
+ const int hb = 8000;
+
+//global int b1 : [0..pr];
+label "consensus" = b2-b1<1 &b3-b2<1;
+
+module n1
+	b1 : int init lhb;
+	s1 : [0..1];
+//	b1 : [0..pr] init lhb;	
+	//	comunication 1 to 2
+	//[push1_2] b1>0 -> (b1'= b1+floor((b2-b1)*0.5)); // update 1 when out
+	//[push1_2] b1>0 -> (b1'= b1+ceil((b2-b1)*0.5));
+	[push1_2] b1>0 -> true;
+	// comunication 2 to 1
+	[push2_1] b1>0 -> (b1'= b1+floor((b2-b1)*0.5));
+	[push2_1] b1>0 -> (b1'= b1+ceil((b2-b1)*0.5));
+	[s] true-> (s1'=0);
+	[] s1=1&s21=1&s23=1&s3=1 -> (s1'=0);
+endmodule
+
+module n2
+	s21 : int init 0;
+	s23 : int init 0;
+	b2 : int init mb;
+//	b2: [0..pr] init mb;	
+// 	comunication 1 to 2
+	[push1_2] b1>0 -> (b2'= b2+floor((b1-b2)*0.5));
+	[push1_2] b1>0 -> (b2'= b2+ceil((b1-b2)*0.5));
+	[push3_2] b1>0 -> (b2'= b2+floor((b3-b2)*0.5));
+	[push3_2] b1>0 -> (b2'= b2+ceil((b3-b2)*0.5));
+	// comunication 2 to 1
+	//[push2_1] b1>0 -> (b2'= b2+floor((b1-b2)*0.5));
+	//[push2_1] b1>0 -> (b2'= b2+ceil((b1-b2)*0.5));
+	[push2_1] b1>0 -> (s23'=1);
+	[push2_3] b1>0 -> (s21'=1);
+	[s] true-> (s21'=0)&(s23'=0);
+	[] s1=1&s21=1&s23=1&s3=1 -> (s21'=0)&(s23'=0);
+	
+endmodule
+
+module n3
+	s3 : [0..1];
+	b3 : int init mhb;
+//	b3: [0..pr] init mb;	
+
+//	comunication 3 to 2
+	[push3_2] b3>0 -> (s3'=1);
+	// comunication 2 to 3
+	[push2_3] b1>0 -> (b3'= b3+floor((b2-b3)*0.5));
+	[push2_3] b1>0 -> (b3'= b3+ceil((b2-b3)*0.5));
+	[s] true-> (s3'=0);
+	[] s1=1&s21=1&s23=1&s3=1 -> (s3'=0);
+
+endmodule
+
+rewards "rounds"
+	[]s1=1&s21=1&s23=1&s3=1:1;
+		
+
+endrewards 
