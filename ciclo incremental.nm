@@ -1,0 +1,29 @@
+mdp 
+
+module x
+	s1:[0..1] init 1;
+	s2:[0..1];
+	s3:[0..1];
+	f1:bool init false;
+	f2:bool init false;
+	f3:bool init false;
+	c: int init 1;
+	c1: int init 0;
+//secuencial
+	[t]s3=1 & c1<c->  (c1'=c1+1);
+	[v]s3=1 & c1=c -> (f1'=true)&(s1'=1)&(s3'=0)&(c'=c+1)&(c1'=0);
+	[r]s1=1->  (s2'=1)&(f3'=true)&(s1'=0);
+	[s]s2=1->  (s3'=1)&(f2'=true)&(s2'=0);
+// nodeterminisitico
+	//[]true->  (s'=1)&(f1'=true);
+//	[]true->  (s'=3)&(f3'=true);
+//	[]true->  (s'=2)&(f2'=true);
+
+	[round] f1&f2&f3-> (f1'=false)&(f2'=false)&(f3'=false);
+endmodule
+rewards "rounds"
+	f1&f2&f3 : 1;
+endrewards 
+
+label "done"= f1&f2&f3;
+
