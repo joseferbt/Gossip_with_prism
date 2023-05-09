@@ -1,20 +1,24 @@
 mdp 
 
 module x
-	s:[1..3];
+	s:[1..4];
+	count :[0..50];
 	f1:bool init false;
 	f2:bool init false;
 	f3:bool init false;
 //secuencial
-//	[]s=1->  (s'=2)&(f1'=true);
-//	[]s=2->  (s'=3)&(f3'=true);
-//	[]s=3->  (s'=1)&(f2'=true);
+	[]s=1& count!=20->  (s'=2)&(f1'=true)&(count'=count+1);
+	[]s=2& count!=20->  (s'=3)&(f3'=true)&(count'=count+1);
+	[]s=3 & count!=20->  (s'=1)&(f2'=true)&(count'=count+1);
+	[]count = 20->(s'=4)& (count'=0);
+	[]s=4 -> (s'=1);
 // nodeterminisitico
-	[]true->  (s'=1)&(f1'=true);
-	[]true->  (s'=3)&(f3'=true);
-	[]true->  (s'=2)&(f2'=true);
+	//[]true->  (s'=1)&(f1'=true);
+	//[]true->  (s'=3)&(f3'=true);
+	//[]true->  (s'=2)&(f2'=true);
+	
 
-	[round] f1&f2&f3-> (f1'=false)&(f2'=false)&(f3'=false);
+
 endmodule
 rewards "rounds"
 	f1&f2&f3 : 1;

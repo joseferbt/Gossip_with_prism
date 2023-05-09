@@ -3,23 +3,25 @@ const int K;
 const int L;
 const int Z;
 
-label "L2" = true;
+E [ G ((((s=T)|((X s=T)|(X X s=T)))&((s=K)|((X s=K)|(X X s=K))))&((s=L)|((X s=L)|(X X s=L)))) ]
 
-E[G ((((s=T) | ((X s =T) | (X X s=T))) & ((s=K) | ((X s =K) | (X X s=K)))) & ((s=L) | ((X s =L) | (X X s=L))))]
+A [ G ((((s=T)|((X s=T)|(X X s=T)))&((s=K)|((X s=K)|(X X s=K))))&((s=L)|((X s=L)|(X X s=L)))) ]
 
-A[G ((((s=T) | ((X s =T) | (X X s=T))) & ((s=K) | ((X s =K) | (X X s=K)))) & ((s=L) | ((X s =L) | (X X s=L))))]
+R{"rounds"}max=? [ F "done" ]
 
-R{"rounds"}max=? [F "done" ]
+R{"rounds"}=? [ I=Z ]
 
-R{"rounds"}=?[I=Z]
+R<=10 [ F "done" ]
 
-R<=10 [F "done"]
+Rmax=? [ C<=50 ]
 
-Rmax=? [ C<=50 ] 
+Rmin=? [ C<=50 ]
 
-Rmin=? [ C<=50 ] 
+Rmax=? [ I=150 ]
 
-Rmax=? [ I=150 ] 
+Rmin=? [ I=150 ]
 
-Rmin=? [ I=150 ] 
+E [ ((((s=T)|((X s=T)|(X X s=T)))&((s=K)|((X s=K)|(X X s=K))))&((s=L)|((X s=L)|(X X s=L)))) ]
+
+E[G(((((((s=T) | (X s=T)) | (X X s=T)) | (X X X s=T)) | (X X X X s=T)) & (((((s=K) | (X s=K)) | (X X s=K)) | (X X X s=K)) | (X X X X s=K))) & (((((s=L) | (X s=L)) | (X X s=L)) | (X X X s=L)) | (X X X X s=L)))]
 
