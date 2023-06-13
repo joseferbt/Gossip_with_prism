@@ -11,16 +11,21 @@ const double inf = 0.5;
 label "consensus" = b2-b1<1 &b3-b2<1;
 
 module n1
+	c : int init 5;
+	c1 : int init 0;
+
 	b1 : int init lhb;
-	s1 : [0..1];
+	s1 : [0..1] init 1;
 //	b1 : [0..pr] init lhb;	
 	//	comunication 1 to 2
 	//[push1_2] b1>0 -> (b1'= b1+floor((b2-b1)*0.5)); // update 1 when out
 	//[push1_2] b1>0 -> (b1'= b1+ceil((b2-b1)*0.5));
-	[push1_2] s1=0|s21=0|s23=0|s3=0 -> (s1'=1);
+	[push1_2] (s1=1)&c<15&c1<c -> (c1'=c1+1);
+	[]c=15->(c'=0);
+	[]c1=c->(c'=c+1)&(c1'=0)&(s1'=0);
 	// comunication 2 to 1
-	[push2_1] b1>0 -> (b1'= b1+floor((b2-b1)*inf));
-	[push2_1] b1>0 -> (b1'= b1+ceil((b2-b1)*inf));
+	[push2_1] b1>0 -> (b1'= b1+floor((b2-b1)*inf))&(s1'=1);
+	[push2_1] b1>0 -> (b1'= b1+ceil((b2-b1)*inf))&(s1'=1);
 	//[push2_1] b1>0 -> (b1'= b1+ceil((b2-b1)*inf));
 	[todos] s1=1&s21=1&s23=1&s3=1 -> (s1'=0);
 endmodule
@@ -31,17 +36,17 @@ module n2
 	b2 : int init mb;
 //	b2: [0..pr] init mb;	
 // 	comunication 1 to 2
-	[push1_2] b1>0 -> (b2'= b2+floor((b1-b2)*inf));
-	[push1_2] b1>0 -> (b2'= b2+ceil((b1-b2)*inf));
+	[push1_2] true-> (b2'= b2+floor((b1-b2)*inf))&(s21'=1)&(s23'=1);
+	[push1_2] true -> (b2'= b2+ceil((b1-b2)*inf))&(s21'=1)&(s23'=1);
 	//[push1_2] b1>0 -> (b2'= b2+ceil((b1-b2)*inf));
 	//[push3_2] b1>0 -> (b2'= b2+floor((b3-b2)*inf));
-	[push3_2] b1>0 -> (b2'= b2+ceil((b3-b2)*inf));
-	[push3_2] b1>0 -> (b2'= b2+floor((b3-b2)*inf));
+	[push3_2] true-> (b2'= b2+ceil((b3-b2)*inf))&(s23'=1)&(s21'=1);
+	[push3_2] true-> (b2'= b2+floor((b3-b2)*inf))&(s23'=1)&(s21'=1);
 	// comunication 2 to 1
 	//[push2_1] b1>0 -> (b2'= b2+floor((b1-b2)*0.5));
 	//[push2_1] b1>0 -> (b2'= b2+ceil((b1-b2)*0.5));
-	[push2_1] s1=0|s23=0|s21=0|s3=0-> (s21'=1);
-	[push2_3] s23=0|s1=0|s21=0|s3=0 -> (s23'=1);
+	[push2_1] s21=1&s1=0&s23=0&s3=0-> (s21'=0);
+	[push2_3] s23=1&s1=0&s21=0&s3=0-> (s23'=0);
 	[todos] s1=1&s21=1&s23=1&s3=1 -> (s21'=0)&(s23'=0);
 	
 endmodule
@@ -52,11 +57,11 @@ module n3
 //	b3: [0..pr] init mb;	
 
 //	comunication 3 to 2
-	[push3_2] s21=0|s23=0|s1=0|s3=0-> (s3'=1);
+	[push3_2] s21=0&s1=0&s23=0&s3=1-> (s3'=0);
 	// comunication 2 to 3
 	//[push2_3] b1>0 -> (b3'= b3+floor((b2-b3)*0.5));
-	[push2_3] b1>0 -> (b3'= b3+floor((b2-b3)*0.5));
-	[push2_3] b1>0 -> (b3'= b3+ceil((b2-b3)*0.5));
+	[push2_3] true-> (b3'= b3+floor((b2-b3)*0.5))&(s3'=1);
+	[push2_3] true -> (b3'= b3+ceil((b2-b3)*0.5))&(s3'=1);
 	[todos] s1=1&s21=1&s23=1&s3=1 -> (s3'=0);
 
 endmodule

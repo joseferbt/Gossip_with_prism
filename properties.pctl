@@ -1,6 +1,14 @@
 const int T;
 
-Pmax=? [F "consensus"]
+Pmax=? [ F "consensus" ]
 
-Pmax=? [F<= T "consensus"]
+Pmax=? [ F<=T "consensus" ]
+
+E[G(((((true) U (s1=1)) & ((true) U (s23=1))) & ((true) U (s21=1))) & ((true) U (s3=1)))]
+
+Pmin=? [ F<=T "consensus" ]
+
+R{"rounds"}=? [F "consensus"]
+
+R{"rounds"}min=? [F "consensus"]
 
